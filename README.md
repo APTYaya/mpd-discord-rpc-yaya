@@ -25,7 +25,7 @@ Few things I still need to fix but since this is mainly for personal usage proba
 But if someone does want to change this inside album_art.rs just change these two consts.
 
 const MUSIC_ROOT: &str = "/mnt/main/Music"; 
-const PENDING_MB_QUEUE_DIR: &str = "/home/Yaya/.local/share/mpd-rpc/pending_covers";
+const PENDING_MB_QUEUE_DIR: &str = "/home/Yaya/.local/share/mpd-rpc/pending_musicbrainz";
 
 To whatever path you have for your music directory and whichever path you want the pending music brainz queue to be. 
 
