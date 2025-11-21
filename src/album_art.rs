@@ -13,7 +13,7 @@ use chrono::Utc;
 use serde_json::json;
 
 const MUSIC_ROOT: &str = "/mnt/main/Music"; 
-const PENDING_MB_QUEUE_DIR: &str = "/home/Yaya/.local/share/mpd-rpc/pending_covers";
+const PENDING_MB_QUEUE_DIR: &str = "/home/Yaya/.local/share/mpd-rpc/pending_musicbrainz";
 
 static APP_USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"));
 

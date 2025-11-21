@@ -1,129 +1,33 @@
-# MPD Discord RPC
+# MPD Discord RPC — Yaya’s Fork
 
-![crates.io](https://img.shields.io/crates/v/mpd-discord-rpc)
-![aur](https://img.shields.io/aur/version/mpd-discord-rpc-git)
+> **Personal fork of the original project:**  
+> **https://github.com/JakeStanger/mpd-discord-rpc**  
+> This fork lives at: **https://github.com/APTYaya/mpd-discord-rpc-yaya**
 
-Displays your currently playing song / album / artist from MPD in Discord using
-Rich Presence, along with the album art.
+This is a customized version of the MPD Discord RPC client with additional code for extracting album art, preparing metadata for missing MusicBrainz releases. 
 
-It includes support for multiple MPD hosts if, like me, you have more than one
-server you alternate between.
+# What is changed in this fork? 
 
-The program does not require MPD or Discord to be running in order to run.
+### 1. Missing MusicBrainz / Cover Art Archive Detection
+When a track is played, this fork checks:
 
-Once installed just run `mpd-discord-rpc`.
+- If it has a MusicBrainz Release ID  
+- If Cover Art Archive has front cover art  
+- If the track cannot be found on MusicBrainz at all  
 
-![status image](https://github.com/user-attachments/assets/797841f6-da4d-4f08-9fbe-026084acab8c)
+### 2. Automatic Embedded Album Art Extraction
+If MusicBrainz/Cover Art Archive doesn’t have artwork:
 
-## Installation
+- The fork attempts to extract embedded album art from the audio file using `ffmpeg`.
+- Extracted images are saved locally as JPEGs.
 
-### Cargo
+Few things I still need to fix but since this is mainly for personal usage probably will not fix anytime soon, 
+But if someone does want to change this inside album_art.rs just change these two consts.
 
-The cargo package can be found [here](https://crates.io/crates/mpd-discord-rpc).
+const MUSIC_ROOT: &str = "/mnt/main/Music"; 
+const PENDING_MB_QUEUE_DIR: &str = "/home/Yaya/.local/share/mpd-rpc/pending_covers";
 
-```
-cargo install mpd-discord-rpc
-```
+To whatever path you have for your music directory and whichever path you want the pending music brainz queue to be. 
 
-### Arch Linux
 
-Two AUR packages are available:
 
-- [mpd-discord-rpc](https://aur.archlinux.org/packages/mpd-discord-rpc)
-- [mpd-discord-rpc-git](https://aur.archlinux.org/packages/mpd-discord-rpc-git)
-
-The systemd unit is included and can be started with:
-
-```
-systemctl --user enable --now mpd-discord-rpc
-```
-
-### NixOS
-
-You can use the
-[`mpd-discord-rpc`](https://search.nixos.org/packages?channel=unstable&show=mpd-discord-rpc&from=0&size=50&sort=relevance&type=packages&query=mpd-discord-rpc)
-package in nixpkgs. Users of home-manager can also use the
-[`services.mpd-discord-rpc.enable`](https://github.com/nix-community/home-manager/blob/master/modules/services/mpd-discord-rpc.nix)
-option.
-
-Many thanks to [Ilan Joselevich](https://github.com/Kranzes) for maintaining
-both of those.
-
-## Configuration
-
-Running the program once will generate a default configuration file. On Linux
-this will be at `~/.config/discord-rpc/config.toml`
-
-- **id** - The Discord application ID to run through.
-- **hosts** - An array of MPD server host socket addresses. Each one will be
-  tried in order until a playing server is found.
-- **format** - Format strings. Tokens are listed below.
-  - **details** - A format string for the top line. This is the song title by
-    default.
-  - **state** - A format string for the second line. This is the artist / album
-    by default.
-  - **timestamp** - The timestamp mode for the third line. This is 'elapsed' by
-    default. Can be one of `both`, `elapsed`, `left` or `off`. Falls back to
-    `both`.
-  - **large_image** - The name of the rich presence asset that gets displayed as
-    the large image. This is `"notes"` by default. Setting this to `""` disables
-    the large image.
-  - **small_image** - The name of the rich presence asset that gets displayed as
-    the small image. This is `"notes"` by default. Setting this to `""` disables
-    the small image.
-  - **large_text** - A format string that is displayed upon hovering the large
-    image. Setting this to `""` disables the hover.
-  - **small_text** - A format string that is displayed upon hovering the small
-    image. Setting this to `""` disables the hover.
-  - **display_type** - The type of content to display in the status. Can be one
-    of `name`, `state` or `details`. Defaults to `state`.
-
-### Formatting Tokens
-
-Any part of the format string that does not match one of these tokens will be
-displayed as is. The following will automatically be replaced with their value
-from MPD:
-
-- `$title`
-- `$album`
-- `$artist`
-- `$albumartist`
-- `$date`
-- `$track`
-- `$disc`
-- `$genre`
-- `$duration`
-- `$elapsed`
-
-### Default Configuration
-
-This configuration file is automatically generated if one does not exist. It is
-included here for reference.
-
-```toml
-id = 677226551607033903
-hosts = ["localhost:6600"]
-
-[format]
-details = "$title"
-state = "$artist / $album"
-timestamp = "both"
-large_image = "notes"
-small_image = "notes"
-large_text = ""
-small_text = ""
-display_type = "name"
-```
-
-## Album art
-
-Album art is pulled from the MusicBrainz database and Album Art Archive
-automatically. You'll only get a cover if it can be found though; there's a
-couple of things you can do to help this:
-
-- Make sure your music is sensibly tagged. In most cases MusicBrainz will be
-  searched for releases matching the album/artist name.
-- Add MusicBrainz release tags to your tracks. This is officially supported by
-  MPD and can be done automatically using MusicBrainz Picard.
-- Add missing album art to MusicBrainz. Many albums are missing covers, and you
-  can upload your own to the database to contribute these for everyone.
